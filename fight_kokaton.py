@@ -31,7 +31,7 @@ class Score:
         self.font = pg.font.SysFont("hgp創英角ポップ体", 30)
         self.color = (0, 0, 255)
         self.score = 0
-        self.img = self.font.render(f"スコア: {self.score}", True, self.color)
+        self.img = self.font.render(f"Score: {self.score}", True, self.color)
         self.rect = self.img.get_rect()
         self.rect.center = (100, HEIGHT - 50)
 
@@ -188,6 +188,7 @@ def main():
     tmr = 0
     score = Score()
     explosions = []
+    beams = [] #multibeam empty List
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
