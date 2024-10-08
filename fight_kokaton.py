@@ -158,6 +158,9 @@ class Bomb:
 
 beams = [] #multibeam empty List
 class Explosion:
+    """
+    Explosions Class
+    """
     def __init__(self, center):
         self.surfaces = [
             pg.image.load("fig/explosion.gif"),
@@ -165,12 +168,12 @@ class Explosion:
         ]
         self.rect = self.surfaces[0].get_rect()
         self.rect.center = center
-        self.life = 30  # 爆発の持続時間
+        self.life = 50 # Explosion duration
 
     def update(self, screen):
         self.life -= 1
         if self.life > 0:
-            index = self.life % len(self.surfaces)
+            index = self.life %  len(self.surfaces)
             screen.blit(self.surfaces[index], self.rect)
             
 
