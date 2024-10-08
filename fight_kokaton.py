@@ -62,6 +62,7 @@ class Bird:
         (+5, +5): pg.transform.rotozoom(img, -45, 0.9),  # 右下
     }
 
+
     def __init__(self, xy: tuple[int, int]):
         """
         こうかとん画像Surfaceを生成する
@@ -154,6 +155,8 @@ class Bomb:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
+beams = [] #multibeam empty List
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -172,8 +175,14 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)           
+                beams.append(Beam(bird))        
         screen.blit(bg_img, [0, 0])
+        
+        #Beams update and delete
+        for beam in beams[:]: #Loop over copy of list
+            beam.update(screen)
+            if not check_bound(beam.rct):#Check out of range
+                beams.remove(beam)
         
         for bomb in bombs:
             if bird.rct.colliderect(bomb.rct):
