@@ -1,3 +1,4 @@
+
 import os
 import random
 import sys
@@ -155,6 +156,25 @@ class Bomb:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
+beams = [] #multibeam empty List
+class Explosion:
+    def __init__(self, center):
+        self.surfaces = [
+            pg.image.load("fig/explosion.gif"),
+            pg.transform.flip(pg.image.load("fig/explosion.gif"), True, False),#reverse
+        ]
+        self.rect = self.surfaces[0].get_rect()
+        self.rect.center = center
+        self.life = 30  # 爆発の持続時間
+
+    def update(self, screen):
+        self.life -= 1
+        if self.life > 0:
+            index = self.life % len(self.surfaces)
+            screen.blit(self.surfaces[index], self.rect)
+            
+
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -167,14 +187,21 @@ def main():
     clock = pg.time.Clock()
     tmr = 0
     score = Score()
+    explosions = []
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)           
+                beams.append(Beam(bird))        
         screen.blit(bg_img, [0, 0])
+        
+        #Beams update and delete
+        for beam in beams[:]: #Loop over copy of list
+            beam.update(screen)
+            if not check_bound(beam.rct):#Check out of range
+                beams.remove(beam)
         
         for bomb in bombs:
             if bird.rct.colliderect(bomb.rct):
@@ -192,8 +219,16 @@ def main():
                 if beam.rct.colliderect(bomb.rct):  # ビームと爆弾が衝突したら
                     beam, bombs[j] = None, None
                     bird.change_img(6, screen)
+                    explosions.append(Explosion(bomb.rct.center))
                     pg.display.update()  
-                    score.score += 1            
+                    score.score += 1
+            for explosion in explosions:#Explosin update and delete
+                    explosion.update(screen)
+                    explosions = [exp for exp in explosions if exp.life > 0]  # delete complecated explosion
+
+                
+                
+        
         bombs = [bomb for bomb in bombs if bomb is not None]
 
         key_lst = pg.key.get_pressed()
