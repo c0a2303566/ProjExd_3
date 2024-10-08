@@ -24,6 +24,20 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
         tate = False
     return yoko, tate
 
+#ゲーム内スコアを表記する関数
+class Score:
+    def __init__(self):
+        self.font = pg.font.SysFont("hgp創英角ポップ体", 30)
+        self.color = (0, 0, 255)
+        self.score = 0
+        self.img = self.font.render(f"スコア: {self.score}", True, self.color)
+        self.rect = self.img.get_rect()
+        self.rect.center = (100, HEIGHT - 50)
+
+    def update(self, screen):
+        self.img = self.font.render(f"Score: {self.score}", True, self.color)
+        screen.blit(self.img, self.rect)
+
 
 class Bird:
     """
@@ -151,6 +165,7 @@ def main():
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     clock = pg.time.Clock()
     tmr = 0
+    score = Score()
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -176,7 +191,8 @@ def main():
                 if beam.rct.colliderect(bomb.rct):  # ビームと爆弾が衝突したら
                     beam, bombs[j] = None, None
                     bird.change_img(6, screen)
-                    pg.display.update()              
+                    pg.display.update()  
+                    score.score += 1            
         bombs = [bomb for bomb in bombs if bomb is not None]
 
         key_lst = pg.key.get_pressed()
@@ -185,6 +201,7 @@ def main():
             beam.update(screen) 
         for bomb in bombs:
             bomb.update(screen)
+        score.update(screen) #スコアの更新
         pg.display.update()
         tmr += 1
         clock.tick(50)
